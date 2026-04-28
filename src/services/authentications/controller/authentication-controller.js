@@ -19,9 +19,6 @@ export async function login(req, res, next) {
     return next(new AuthenticationError("Kredensial tidak valid"));
   }
 
-  console.log("userRecord :", userRecord);
-  console.log("password :", password);
-
   const isValid = await bcrypt.compare(password, userRecord.password);
 
   // Check if the password is correct

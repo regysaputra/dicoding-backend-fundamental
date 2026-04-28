@@ -4,8 +4,18 @@ import {NotFoundError} from "../../../exceptions/index.js";
 import {uuidv7} from "uuidv7";
 
 const categoryRepositories = new CategoryRepositories();
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export async function getAllCategory(req, res, next) {
+function validateCategoryId(id, next) {
+  if (!uuidRegex.test(id)) {
+    next(new NotFoundError("Category tidak ditemukan"));
+    return false;
+  }
+
+  return true;
+}
+
+export async function getAllCategory(req, res) {
   const categories = await categoryRepositories.getAllCategory();
 
   return response(
@@ -13,7 +23,7 @@ export async function getAllCategory(req, res, next) {
     200,
     "Berhasil mendapatkan semua kategori",
     {
-      categories
+      categories,
     }
   );
 }
@@ -21,12 +31,15 @@ export async function getAllCategory(req, res, next) {
 export async function getCategoryById(req, res, next) {
   const { id } = req.params;
 
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return next(new NotFoundError("Category tidak ditemukan"));
+  if (!validateCategoryId(id, next)) {
+    return;
   }
 
   const category = await categoryRepositories.getCategoryById(id);
+
+  if (!category) {
+    return response(res, 404, "Category not found");
+  }
 
   return response(
     res,
@@ -36,7 +49,7 @@ export async function getCategoryById(req, res, next) {
   );
 }
 
-export async function addCategory(req, res, next) {
+export async function addCategory(req, res) {
   const { name } = req.body;
   const id = uuidv7();
   await categoryRepositories.addCategory(id, name);
@@ -46,7 +59,7 @@ export async function addCategory(req, res, next) {
     201,
     "Berhasil menambahkan kategori",
     {
-      id
+      id,
     }
   );
 }
@@ -55,19 +68,22 @@ export async function updateCategory(req, res, next) {
   const { id } = req.params;
   const { name } = req.body;
 
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return next(new NotFoundError("Category tidak ditemukan"));
+  if (!validateCategoryId(id, next)) {
+    return;
   }
 
-  await categoryRepositories.updateCategoryById(id, name);
+  const updatedCount = await categoryRepositories.updateCategoryById(id, name);
+
+  if (updatedCount === 0) {
+    return response(res, 404, "Category not found");
+  }
 
   return response(
     res,
     200,
     "Berhasil mengubah kategori",
     {
-      id
+      id,
     }
   );
 }
@@ -75,19 +91,22 @@ export async function updateCategory(req, res, next) {
 export async function deleteCategory(req, res, next) {
   const { id } = req.params;
 
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return next(new NotFoundError("Category tidak ditemukan"));
+  if (!validateCategoryId(id, next)) {
+    return;
   }
 
-  await categoryRepositories.deleteCategoryById(id);
+  const deletedCount = await categoryRepositories.deleteCategoryById(id);
+
+  if (deletedCount === 0) {
+    return response(res, 404, "Category not found");
+  }
 
   return response(
     res,
     200,
     "Berhasil menghapus kategori",
     {
-      id
+      id,
     }
   );
 }

@@ -18,6 +18,12 @@ export function up(pgm) {
     description: {
       type: 'text',
     },
+    website: {
+      type: 'varchar(255)',
+    },
+    industry : {
+      type: 'varchar(255)',
+    },
   });
 
   pgm.addConstraint('companies', 'unique_company_name_location', {

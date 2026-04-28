@@ -30,10 +30,12 @@ export async function getUser(req, res, next) {
   }
 
   // Check if user exists
-  const user = await userRepositories.getUserById(id);
-  if (!user) {
+  const result = await userRepositories.getUserById(id);
+  if (!result) {
     return next(new InvariantError("User tidak ditemukan"));
   }
 
-  return response(res, 200, "User ditemukan", user);
+  res.setHeader("X-Data-Source", result.source);
+
+  return response(res, 200, "User ditemukan", result.user);
 }

@@ -6,11 +6,9 @@ import {NotFoundError} from "../../../exceptions/index.js";
 const bookmarkRepositories = new BookmarkRepositories();
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export async function addBookmark(req, res, next) {
+export async function addBookmark(req, res) {
   const { jobId } = req.params;
-  console.log("JOB ID: ", jobId);
   const { id: userId } = req.user;
-  console.log("USER ID: ", userId);
   const id = uuidv7();
 
   await bookmarkRepositories.addBookmark({ id, jobId, userId });
@@ -23,27 +21,35 @@ export async function addBookmark(req, res, next) {
   );
 }
 
-export async function getAllUserBookmark(req, res, next) {
-  const { userId } = req.user;
-  const bookmarks = await bookmarkRepositories.getAllBookmarkByUserId(userId);
+export async function getAllUserBookmark(req, res) {
+  const { id: userId } = req.user;
+  const result = await bookmarkRepositories.getAllBookmarkByUserId(userId);
+
+  res.setHeader("X-Data-Source", result.source);
+
   return response(
     res,
     200,
     "Bookmark retrieved successfully",
     {
-      bookmarks
+      bookmarks: result.bookmarks
     },
   );
 }
 
 export async function getBookmarkById(req, res, next) {
-  const { id } = req.params;
+  const { jobId, id } = req.params;
+  const { id: userId } = req.user;
 
   if (!uuidRegex.test(id)) {
     return next(new NotFoundError("Bookmark tidak ditemukan"));
   }
 
-  const bookmark = await bookmarkRepositories.getBookmarkById(id);
+  if (!uuidRegex.test(jobId)) {
+    return next(new NotFoundError("Bookmark tidak ditemukan"));
+  }
+
+  const bookmark = await bookmarkRepositories.getBookmarkById(id, jobId, userId);
 
   if (!bookmark) {
     return next(new NotFoundError("Bookmark tidak ditemukan"));
@@ -59,7 +65,17 @@ export async function getBookmarkById(req, res, next) {
 
 export async function deleteBookmark(req, res, next) {
   const { jobId } = req.params;
-  await bookmarkRepositories.deleteBookmark(jobId);
+  const { id: userId } = req.user;
+
+  if (!uuidRegex.test(jobId)) {
+    return next(new NotFoundError("Bookmark tidak ditemukan"));
+  }
+
+  const deletedCount = await bookmarkRepositories.deleteBookmark(jobId, userId);
+
+  if (deletedCount === 0) {
+    return next(new NotFoundError("Bookmark tidak ditemukan"));
+  }
 
   return response(
     res,

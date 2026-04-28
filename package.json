@@ -20,6 +20,7 @@
   "scripts": {
     "start:dev": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "consumer:applications": "node src/services/message-queue/consumers/application-consumer.js",
     "lint": "eslint .",
     "format": "prettier --write",
     "migrate": "node -r dotenv/config node_modules/.bin/node-pg-migrate"
@@ -37,13 +38,17 @@
     "prettier": "^3.8.3"
   },
   "dependencies": {
+    "amqplib": "^1.0.3",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "nodemailer": "8.0.5",
     "node-pg-migrate": "^8.0.4",
     "pg": "^8.20.0",
+    "redis": "^5.12.1",
     "uuidv7": "^1.2.1"
   }
 }

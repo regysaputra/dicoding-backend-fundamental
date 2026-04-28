@@ -4,21 +4,30 @@
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-  pgm.createTable('categories', {
+  pgm.createTable("documents", {
     id: {
-      type: 'uuid',
+      type: "uuid",
       primaryKey: true,
     },
-    name: {
-      type: 'varchar(255)',
+    original_name: {
+      type: "varchar(255)",
       notNull: true,
     },
-    description: {
-      type: 'text',
+    stored_name: {
+      type: "varchar(255)",
+      notNull: true,
     },
-    createdAt: {
-      type: 'timestamp',
-      default: pgm.func('current_timestamp'),
+    mime_type: {
+      type: "varchar(255)",
+      notNull: true,
+    },
+    size: {
+      type: "integer",
+      notNull: true,
+    },
+    path: {
+      type: "varchar(255)",
+      notNull: true,
     }
   });
 };
@@ -29,5 +38,5 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-  pgm.dropTable('categories');
+  pgm.dropTable("documents");
 };

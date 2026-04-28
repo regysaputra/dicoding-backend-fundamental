@@ -32,13 +32,15 @@ export default class CategoryRepositories {
     const query = "UPDATE categories SET name = $1 WHERE id = $2";
     const value = [name, id];
 
-    await this.#pool.query(query, value);
+    const result = await this.#pool.query(query, value);
+    return result.rowCount;
   }
 
   async deleteCategoryById(id) {
     const query = "DELETE FROM categories WHERE id = $1";
     const value = [id];
 
-    await this.#pool.query(query, value);
+    const result = await this.#pool.query(query, value);
+    return result.rowCount;
   }
 }

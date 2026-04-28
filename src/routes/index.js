@@ -7,6 +7,7 @@ import jobs from '../services/jobs/routes/index.js';
 import applications from '../services/applications/routes/index.js';
 import bookmarks from '../services/bookmarks/routes/index.js';
 import profiles from '../services/profiles/routes/index.js';
+import documents from '../services/documents/routes/index.js';
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use("/jobs", jobs);
 router.use("/applications", applications);
 router.use("/bookmarks", bookmarks);
 router.use("/profile", profiles);
+router.use("/documents", documents);
 
 export default router;
