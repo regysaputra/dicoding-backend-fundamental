@@ -1,0 +1,24 @@
+{
+  "name": "openjob_consumer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/consumer.js",
+    "dev": "nodemon src/consumer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "amqplib": "^1.0.3",
+    "dotenv": "^17.4.2",
+    "nodemailer": "^8.0.7",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "nodemon": "^3.1.14"
+  }
+}

@@ -1,5 +1,8 @@
-node_modules
-.env
-.env.*
+openjob_api/node_modules
+openjob_consumer/node_modules
+openjob_consumer/.env
+openjob_api/.env
+openjob_consumer/.env.*
+openjob_api/.env.*
 .idea
-uploads
+openjob_api/uploads
