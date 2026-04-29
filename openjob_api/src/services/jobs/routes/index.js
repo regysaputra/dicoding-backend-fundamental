@@ -16,7 +16,6 @@ router.get('/category/:jobCategoryId', urlParamsValidator(jobCategoryParamsSchem
 router.get('/:id', getJobById);
 router.put('/:id', authenticateToken, validate(jobUpdatePayloadSchema), updateJob);
 router.delete('/:id', authenticateToken, deleteJob);
-
 router.post("/:jobId/bookmark", authenticateToken, addBookmark);
 router.get("/:jobId/bookmark/:id", authenticateToken, getBookmarkById);
 router.delete("/:jobId/bookmark", authenticateToken, deleteBookmark);

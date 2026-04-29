@@ -49,17 +49,19 @@ export async function getBookmarkById(req, res, next) {
     return next(new NotFoundError("Bookmark tidak ditemukan"));
   }
 
-  const bookmark = await bookmarkRepositories.getBookmarkById(id, jobId, userId);
+  const result = await bookmarkRepositories.getBookmarkById(id, jobId, userId);
 
-  if (!bookmark) {
+  if (!result?.bookmark) {
     return next(new NotFoundError("Bookmark tidak ditemukan"));
   }
+
+  res.setHeader("X-Data-Source", result.source);
 
   return response(
     res,
     200,
     "Bookmark retrieved successfully",
-    bookmark
+    result.bookmark,
   );
 }
 

@@ -15,7 +15,7 @@ export default class BookmarkRepositories {
     await this.#pool.query(query, [id, userId, jobId]);
 
     await this.#cacheService.delete(`bookmark:${id}`);
-    await this.#cacheService.delete(`bookmark:${userId}`);
+    await this.#cacheService.delete(`bookmark:user:${userId}`);
   }
 
   async getAllBookmarkByUserId(userId) {
@@ -31,16 +31,18 @@ export default class BookmarkRepositories {
         };
       }
     } catch(error) {
-      const query = `SELECT * FROM bookmarks WHERE user_id = $1`;
-      const result = await this.#pool.query(query, [userId]);
-
-      await this.#cacheService.set(cacheKey, JSON.stringify(result.rows), 60 * 60);
-
-      return {
-        bookmarks: result.rows,
-        source: "database"
-      };
+      console.log("Error from cache", error);
     }
+
+    const query = `SELECT * FROM bookmarks WHERE user_id = $1`;
+    const result = await this.#pool.query(query, [userId]);
+
+    await this.#cacheService.set(cacheKey, JSON.stringify(result.rows), 60 * 60);
+
+    return {
+      bookmarks: result.rows,
+      source: "database"
+    };
   }
 
   async getBookmarkById(id, jobId, userId) {
@@ -53,7 +55,10 @@ export default class BookmarkRepositories {
         const bookmark = JSON.parse(cachedBookmark);
 
         if (bookmark?.job_id === jobId && bookmark?.user_id === userId) {
-          return bookmark;
+          return {
+            bookmark,
+            source: "cache"
+          };
         }
       }
     } catch (error) {
@@ -68,7 +73,10 @@ export default class BookmarkRepositories {
       await this.#cacheService.set(cacheKey, JSON.stringify(bookmark), 60 * 60);
     }
 
-    return bookmark;
+    return {
+      bookmark,
+      source: "database"
+    };
   }
 
   async deleteBookmark(jobId, userId) {

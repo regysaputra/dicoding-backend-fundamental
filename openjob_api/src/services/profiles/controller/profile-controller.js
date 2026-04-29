@@ -43,13 +43,16 @@ export async function getApplicationByUserId(req, res) {
 export async function getBookmarkByUserId(req, res) {
   const { id } = req.user;
 
-  const bookmarks = await bookmarkRepositories.getAllBookmarkByUserId(id);
+  const result = await bookmarkRepositories.getAllBookmarkByUserId(id);
+
+  res.setHeader("X-Data-Source", result.source);
+
   return response(
     res,
     200,
     "Success get bookmark",
     {
-      bookmarks
+      bookmarks: result.bookmarks,
     },
   );
 }
